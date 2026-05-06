@@ -15,6 +15,10 @@
         "symfony/yaml": "7.4.*"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-symfony": "^2.0",
+        "vimeo/psalm": "^6.16"
     },
     "config": {
         "allow-plugins": {
@@ -55,7 +59,10 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "lint:phpstan": "vendor/bin/phpstan analyze --configuration phpstan.neon src",
+        "lint:psalm": "vendor/bin/psalm --config psalm.xml src",
+        "fix-cs": "vendor/bin/php-cs-fixer fix src"
     },
     "conflict": {
         "symfony/symfony": "*"
