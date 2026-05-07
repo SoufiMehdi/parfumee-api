@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Ecommerce\Domain\Model;
+namespace App\Ecommerce\Domain\Model\Catalog;
 
 class Category
 {

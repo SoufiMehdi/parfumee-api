@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Ecommerce\Infrastructure\Persistence\Entity;
+namespace App\Ecommerce\Infrastructure\Persistence\Entity\Catalog;
 
 use Doctrine\ORM\Mapping as ORM;
 

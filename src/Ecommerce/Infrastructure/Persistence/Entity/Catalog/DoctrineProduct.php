@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Ecommerce\Infrastructure\Persistence\Entity;
+namespace App\Ecommerce\Infrastructure\Persistence\Entity\Catalog;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Ecommerce\Domain\Model\Category;
+use App\Ecommerce\Infrastructure\Persistence\Entity\Catalog\DoctrineCategory;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'products')]
@@ -19,9 +19,9 @@ class DoctrineProduct
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private float $price;
 
-    #[ORM\ManyToOne(targetEntity: Category::class)]
+    #[ORM\ManyToOne(targetEntity: DoctrineCategory::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private Category $category;
+    private DoctrineCategory $category;
 
     /**
      * C'est ici que réside la magie pour le côté générique.
@@ -30,7 +30,12 @@ class DoctrineProduct
     #[ORM\Column(type: 'json')]
     private array $attributes = [];
 
-    public function __construct(string $id, string $name, float $price, Category $category, array $attributes = [])
+    public function __construct(
+        string $id, 
+        string $name,
+         float $price, DoctrineCategory $category, 
+         array $attributes = []
+         )
     {
         $this->id = $id;
         $this->name = $name;
@@ -44,6 +49,6 @@ class DoctrineProduct
     public function setName(string $name): void { $this->name = $name; }
     public function getPrice(): float { return $this->price; }
     public function setPrice(float $price): void { $this->price = $price;}
-    public function getCategory(): Category { return $this->category; }
-    public function setCategory(Category $category): void { $this->category = $category; }
+    public function getCategory(): DoctrineCategory { return $this->category; }
+    public function setCategory(DoctrineCategory $category): void { $this->category = $category; }
 }

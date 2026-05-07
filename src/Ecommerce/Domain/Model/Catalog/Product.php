@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Ecommerce\Domain\Model;
+namespace App\Ecommerce\Domain\Model\Catalog;
 
-use App\Ecommerce\Domain\Model\Category;
+use App\Ecommerce\Domain\Model\Catalog\Category;
 
 class Product
 {
