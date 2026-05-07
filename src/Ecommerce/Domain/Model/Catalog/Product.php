@@ -42,4 +42,7 @@ class Product
     public function getId(): string { return $this->id; }
     public function getName(): string { return $this->name; }
     public function getAttributes(): array { return $this->attributes; }
+    public function getSlug(): string { return $this->slug; }
+    public function getPrice(): float { return $this->price; }
+    public function getCategory(): Category { return $this->category; }
 }

@@ -51,4 +51,7 @@ class DoctrineProduct
     public function setPrice(float $price): void { $this->price = $price;}
     public function getCategory(): DoctrineCategory { return $this->category; }
     public function setCategory(DoctrineCategory $category): void { $this->category = $category; }
+    public function getAttributes(): array { return $this->attributes; }
+    public function setAttributes(array $attributes): void { $this->attributes = $attributes;}
+
 }
