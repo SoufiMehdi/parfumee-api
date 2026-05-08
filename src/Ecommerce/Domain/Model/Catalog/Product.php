@@ -2,6 +2,7 @@
 
 namespace App\Ecommerce\Domain\Model\Catalog;
 
+use App\Ecommerce\Domain\Exception\Catalog\InvalidPriceException;
 use App\Ecommerce\Domain\Model\Catalog\Category;
 
 class Product
@@ -33,7 +34,7 @@ class Product
     public function setPrice(float $price): void
     {
         if ($price < 0) {
-            throw new \InvalidArgumentException("Le prix ne peut pas être négatif.");
+            throw new InvalidPriceException($price);
         }
         $this->price = $price;
     }

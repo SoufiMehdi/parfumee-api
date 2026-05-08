@@ -2,6 +2,7 @@
 
 namespace App\Ecommerce\Infrastructure\Persistence\Doctrine\Catalog;
 
+use App\Ecommerce\Domain\Exception\Catalog\CategorieNotFoundException;
 use App\Ecommerce\Domain\Model\Catalog\Product;
 use App\Ecommerce\Domain\Repository\Catalog\ProductRepositoryInterface;
 use App\Ecommerce\Infrastructure\Persistence\Entity\Catalog\DoctrineProduct;
@@ -27,7 +28,7 @@ class DoctrineProductRepository implements ProductRepositoryInterface
         $doctrineCategory = $categoryRepo->find($product->getCategory()->getId());
 
         if (!$doctrineCategory) {
-            throw new \RuntimeException("La catégorie associée au produit n'existe pas en base de données.");
+           throw new CategorieNotFoundException($product->getCategory()->getId());
         }
 
         // On mappe le produit Domaine vers une entité Doctrine

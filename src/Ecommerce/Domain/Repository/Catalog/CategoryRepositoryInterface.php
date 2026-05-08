@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Ecommerce\Infrastructure\Persistence\Doctrine\Catalog;
+namespace App\Ecommerce\Domain\Repository\Catalog;
 
 use App\Ecommerce\Domain\Model\Catalog\Category;
 
