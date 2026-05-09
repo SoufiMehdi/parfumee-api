@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Ecommerce\Infrastructure\Persistence\Mapper;
+namespace App\Ecommerce\Infrastructure\Persistence\Mapper\Catalog;
 
 use App\Ecommerce\Domain\Model\Catalog\Product;
 use App\Ecommerce\Domain\Model\Catalog\Category;

@@ -24,8 +24,9 @@ class ExceptionListener
             $response->setStatusCode($exception->getStatusCode());
         } else {
             // Pour les autres exceptions, on retourne une erreur générique
-            $response->setData(['error' => 'Une erreur interne est survenue.']);
-            $response->setStatusCode(JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            $response = new JsonResponse([
+                'error' => 'An unexpected error occurred.' . $exception->getMessage() // Optionnel : inclure le message de l'exception pour le debug
+            ], 500); // Internal Server Error pour les erreurs inattendues
         }
 
         $event->setResponse($response);

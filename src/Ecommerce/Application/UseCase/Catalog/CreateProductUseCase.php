@@ -17,14 +17,14 @@ class CreateProductUseCase
     ) {
     }
 
-    public function execute(CreateProductDto $dto): void
+    public function execute(CreateProductDto $dto): ?string
     {
         // 1. Récupérer la catégorie depuis la base de données
         $category = $this->categoryRepository->findById(Uuid::fromString($dto->categoryId));
         if (!$category) {
             throw new CategorieNotFoundException($dto->categoryId);
         }
-
+        
         // 2. Créer le produit en utilisant le modèle Domaine
         $product = new Product(
             Uuid::v4()->toRfc4122(), // Génère un nouvel ID pour le produit
@@ -34,8 +34,8 @@ class CreateProductUseCase
             $category,
             $dto->attributes
         );
-
         // 3. Enregistrer le produit en base de données via le repository
         $this->productRepository->save($product);
+        return $product->getId();
     }
 }

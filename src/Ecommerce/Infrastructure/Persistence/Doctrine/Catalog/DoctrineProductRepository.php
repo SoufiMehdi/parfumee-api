@@ -7,7 +7,7 @@ use App\Ecommerce\Domain\Model\Catalog\Product;
 use App\Ecommerce\Domain\Repository\Catalog\ProductRepositoryInterface;
 use App\Ecommerce\Infrastructure\Persistence\Entity\Catalog\DoctrineProduct;
 use App\Ecommerce\Infrastructure\Persistence\Entity\Catalog\DoctrineCategory;
-use App\Ecommerce\Infrastructure\Persistence\Mapper\ProductMapper;
+use App\Ecommerce\Infrastructure\Persistence\Mapper\Catalog\ProductMapper;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DoctrineProductRepository implements ProductRepositoryInterface

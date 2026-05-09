@@ -1,0 +1,14 @@
+### Créer une Bougie
+POST http://127.0.0.1:8000/product
+Content-Type: application/json
+
+{
+    "name": "Bougie Vanille Gourmande",
+    "price": 15.90,
+    "category_id": "018f5370-1234-7000-8000-000000000001",
+    "attributes": {
+        "fragrance": "Vanille",
+        "weight": "180g",
+        "wax": "Soja"
+    }
+}

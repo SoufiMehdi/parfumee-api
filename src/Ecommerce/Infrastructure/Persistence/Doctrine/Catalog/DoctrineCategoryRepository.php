@@ -2,7 +2,7 @@
 namespace App\Ecommerce\Infrastructure\Persistence\Doctrine\Catalog;
 
 use App\Ecommerce\Domain\Model\Catalog\Category;
-use App\Ecommerce\Infrastructure\Persistence\Doctrine\Catalog\CategoryRepositoryInterface;
+use App\Ecommerce\Domain\Repository\Catalog\CategoryRepositoryInterface;
 use App\Ecommerce\Infrastructure\Persistence\Entity\Catalog\DoctrineCategory;
 use App\Ecommerce\Infrastructure\Persistence\Mapper\Catalog\CategoryMapper;
 use Doctrine\ORM\EntityManagerInterface;
