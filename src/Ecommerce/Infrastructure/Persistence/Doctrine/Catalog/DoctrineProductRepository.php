@@ -2,6 +2,7 @@
 
 namespace App\Ecommerce\Infrastructure\Persistence\Doctrine\Catalog;
 
+use App\Ecommerce\Application\DTO\Catalog\CreateProductDto;
 use App\Ecommerce\Domain\Exception\Catalog\CategorieNotFoundException;
 use App\Ecommerce\Domain\Model\Catalog\Product;
 use App\Ecommerce\Domain\Repository\Catalog\ProductRepositoryInterface;
@@ -23,16 +24,18 @@ class DoctrineProductRepository implements ProductRepositoryInterface
 
     public function save(Product $product): void
     {
-        // On doit d'abord récupérer la catégorie Doctrine correspondante
-        $categoryRepo = $this->entityManager->getRepository(DoctrineCategory::class);
-        $doctrineCategory = $categoryRepo->find($product->getCategory()->getId());
-
-        if (!$doctrineCategory) {
-           throw new CategorieNotFoundException($product->getCategory()->getId());
+        $doctrineProduct = $this->entityManager->find(DoctrineProduct::class, $product->getId());
+        if (!$doctrineProduct) {
+            // C'est un nouveau produit (Logique de création)
+            $doctrineCategory = $this->entityManager->getReference(DoctrineCategory::class, $product->getCategory()->getId());
+            $doctrineProduct = $this->mapper->toInfrastructure($product, $doctrineCategory);
+            $this->entityManager->persist($doctrineProduct);
+        } else {
+            // C'est une mise à jour (Logique d'update)
+            $doctrineCategory = $this->entityManager->getReference(DoctrineCategory::class, $product->getCategory()->getId());
+            // Tu ajoutes une méthode dans ton Mapper pour mettre à jour l'entité existante
+             $this->mapper->mapDomainToEntity($product, $doctrineProduct, $doctrineCategory);
         }
-
-        // On mappe le produit Domaine vers une entité Doctrine
-        $doctrineProduct = $this->mapper->toInfrastructure($product, $doctrineCategory);
 
         // On persiste l'entité Doctrine
         $this->entityManager->persist($doctrineProduct);

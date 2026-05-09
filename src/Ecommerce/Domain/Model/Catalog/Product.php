@@ -46,4 +46,18 @@ class Product
     public function getSlug(): string { return $this->slug; }
     public function getPrice(): float { return $this->price; }
     public function getCategory(): Category { return $this->category; }
+    public function updateDetails(
+        string $name, 
+        float $price, 
+        Category $category, 
+        array $attributes
+    ): void 
+    {
+        $this->name = $name;
+        $this->price = $price;
+        $this->category = $category;
+        $this->attributes = $attributes;
+        // Tu peux aussi recalculer le slug ici
+        $this->slug = str_replace(' ', '-', strtolower($name));
+    }
 }

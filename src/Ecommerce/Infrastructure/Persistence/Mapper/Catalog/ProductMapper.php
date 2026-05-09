@@ -2,6 +2,7 @@
 
 namespace App\Ecommerce\Infrastructure\Persistence\Mapper\Catalog;
 
+use App\Ecommerce\Application\DTO\Catalog\CreateProductDto;
 use App\Ecommerce\Domain\Model\Catalog\Product;
 use App\Ecommerce\Domain\Model\Catalog\Category;
 use App\Ecommerce\Infrastructure\Persistence\Entity\Catalog\DoctrineProduct;
@@ -28,6 +29,18 @@ class ProductMapper
             $category,
             $product->getAttributes()
         );
+    }
+
+    /**
+     * Mappe un modèle Domaine vers une entité Doctrine
+     */
+    public function mapDomainToEntity(Product $product, DoctrineProduct $doctrineProduct, DoctrineCategory $category): void
+    {
+        $doctrineProduct->setName($product->getName());
+        $doctrineProduct->setPrice($product->getPrice());
+        $doctrineProduct->setCategory($category);
+        $doctrineProduct->setAttributes($product->getAttributes());
+        // Tu peux aussi mettre à jour le slug si tu le stockes dans DoctrineProduct
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Ecommerce\Domain\Repository\Catalog;
 
+use App\Ecommerce\Application\DTO\Catalog\CreateProductDto;
 use App\Ecommerce\Domain\Model\Catalog\Product;
 
 interface ProductRepositoryInterface
