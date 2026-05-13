@@ -1,0 +1,28 @@
+info:
+  name: create product
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{host}}/product"
+  body:
+    type: json
+    data: |-
+      {
+          "name": "Bougie Vanille Gourmande",
+          "price": 15.90,
+          "category_id": "018f5370-1234-7000-8000-000000000001",
+          "attributes": {
+              "fragrance": "Vanille",
+              "weight": "180g",
+              "wax": "Soja"
+          }
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
