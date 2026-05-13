@@ -6,6 +6,7 @@ use App\Ecommerce\Application\DTO\Catalog\UpdateProductDto;
 use App\Ecommerce\Domain\Model\Catalog\Product;
 use App\Ecommerce\Domain\Repository\Catalog\ProductRepositoryInterface;
 use App\Ecommerce\Domain\Repository\Catalog\CategoryRepositoryInterface;
+use App\Ecommerce\Application\Mapper\AttributesMapper;
 
 class UpdateProductUseCase
 {
@@ -31,7 +32,7 @@ class UpdateProductUseCase
             $dto->name,
             $dto->price,
             $category,
-            $dto->attributes
+            AttributesMapper::fromDto($dto)
         );
         $this->productRepository->save($product);
         return $product;

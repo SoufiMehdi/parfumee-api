@@ -8,11 +8,13 @@ use App\Ecommerce\Domain\Model\Catalog\Category;
 use App\Ecommerce\Infrastructure\Persistence\Entity\Catalog\DoctrineProduct;
 use App\Ecommerce\Infrastructure\Persistence\Entity\Catalog\DoctrineCategory;
 use App\Ecommerce\Infrastructure\Persistence\Mapper\Catalog\CategoryMapper;
+use App\Ecommerce\Application\Mapper\AttributesMapper;
 
 class ProductMapper
 {
     public function __construct(
-        private CategoryMapper $categoryMapper
+        private CategoryMapper $categoryMapper,
+        private AttributesMapper $attributesMapper
     )
     {
         // Si tu as besoin d'injecter d'autres mappers ou services, tu peux le faire ici
@@ -27,7 +29,7 @@ class ProductMapper
             $product->getName(),
             $product->getPrice(),
             $category,
-            $product->getAttributes()
+            $this->attributesMapper->toDto($product->getAttributes())
         );
     }
 
@@ -39,7 +41,7 @@ class ProductMapper
         $doctrineProduct->setName($product->getName());
         $doctrineProduct->setPrice($product->getPrice());
         $doctrineProduct->setCategory($category);
-        $doctrineProduct->setAttributes($product->getAttributes());
+        $doctrineProduct->setAttributes($this->attributesMapper->toDto($product->getAttributes()));
         // Tu peux aussi mettre à jour le slug si tu le stockes dans DoctrineProduct
     }
 
@@ -55,7 +57,7 @@ class ProductMapper
             "slug-placeholder", // Tu peux ajouter le slug dans DoctrineProduct si besoin
             $doctrineProduct->getPrice(),
             $this->categoryMapper->toDomain($doctrineProduct->getCategory()),
-            $doctrineProduct->getAttributes()
+            $this->attributesMapper->fromArray($doctrineProduct->getAttributes())
         );
     }
 }
