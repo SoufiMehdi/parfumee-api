@@ -13,6 +13,7 @@ use App\Ecommerce\Application\DTO\Catalog\CreateProductDto;
 use App\Ecommerce\Application\DTO\Catalog\UpdateProductDto;
 use App\Ecommerce\Application\UseCase\Catalog\UpdateProductUseCase;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Ecommerce\Application\UseCase\Catalog\UploadProductImageUseCase;
 
 class ProductController extends AbstractController
 {
@@ -61,5 +62,21 @@ class ProductController extends AbstractController
         $product = $useCase->execute($dto, $id);
         return new JsonResponse($product, JsonResponse::HTTP_OK);   
     }
-    
+    #[Route('/upload-picture/{productId}', name: 'upload_picture', methods: [Request::METHOD_POST])]
+    public function uploadPicture(string $productId, Request $request, UploadProductImageUseCase $useCase): JsonResponse
+    {   
+        $file = $request->files->get('file');
+        $alt = $request->request->get('alt');
+
+        if (!$productId || !$file) {
+            return new JsonResponse(['message' => 'Product ID and file are required'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $picture = $useCase->execute($productId, $file, $alt);
+            return new JsonResponse($picture, JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => $e->getMessage()], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

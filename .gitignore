@@ -9,6 +9,7 @@
 /var/
 /vendor/
 /tests/http/
+/public/uploads/
 ###< symfony/framework-bundle ###
 
 ###> phpstan/phpstan ###
