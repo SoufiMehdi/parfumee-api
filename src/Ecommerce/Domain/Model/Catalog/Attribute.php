@@ -38,4 +38,13 @@ class Attribute {
 
     public function getPresentation(): ?string { return $this->presentation; }
     public function setPresentation(?string $presentation): void { $this->presentation = $presentation; }
+    public function toArray(): array {
+        return [
+            'weight' => $this->weight,
+            'fragrance' => $this->fragrance,
+            'size' => $this->size,
+            'description' => $this->description,
+            'presentation' => $this->presentation
+        ];
+    }
 }

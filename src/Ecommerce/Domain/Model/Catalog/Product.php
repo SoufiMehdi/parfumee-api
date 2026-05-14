@@ -4,6 +4,7 @@ namespace App\Ecommerce\Domain\Model\Catalog;
 
 use App\Ecommerce\Domain\Exception\Catalog\InvalidPriceException;
 use App\Ecommerce\Domain\Model\Catalog\Category;
+use App\Ecommerce\Domain\Model\Catalog\Picture;
 
 class Product
 {
@@ -13,6 +14,7 @@ class Product
     private float $price;
     private Category $category;
     private ?Attribute $attributes; // Stockera tes données spécifiques (parfum, taille, etc.)
+    private ?array $pictures; // Stockera les images du produit
 
     public function __construct(
         string $id,
@@ -58,5 +60,13 @@ class Product
         $this->attributes = ($attributes) ? $attributes : $this->attributes;
         // Tu peux aussi recalculer le slug ici
         $this->slug = str_replace(' ', '-', strtolower($name));
+    }
+    public function addPicture(Picture $picture): void
+    {
+        $this->pictures[] = $picture;
+    }
+    public function getPictures(): ?array
+    {
+        return $this->pictures;
     }
 }

@@ -17,7 +17,7 @@ class ProductPresenter
                 'id' => $product->getCategory()->getId(),
                 'name' => $product->getCategory()->getName()
             ],
-            'attributes' => $product->getAttributes()
+            'attributes' => $product->getAttributes()->toArray()
         ];
     }
     /**
