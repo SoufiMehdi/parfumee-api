@@ -2,48 +2,56 @@
 
 namespace App\Tests\Unit\Ecommerce\Application\UseCase\Catalog;
 
-use App\Ecommerce\Application\DTO\Catalog\UpdateProductDto; // Assure-toi du nom du DTO
+use App\Ecommerce\Application\DTO\Catalog\UpdateProductDto;
 use App\Ecommerce\Application\UseCase\Catalog\UpdateProductUseCase;
 use App\Ecommerce\Domain\Model\Catalog\Product;
 use App\Ecommerce\Domain\Model\Catalog\Category;
 use App\Ecommerce\Domain\Repository\Catalog\ProductRepositoryInterface;
 use App\Ecommerce\Domain\Repository\Catalog\CategoryRepositoryInterface;
+use App\Ecommerce\Domain\Model\Catalog\Attribute;
+use App\Ecommerce\Application\Mapper\AttributesMapper;
 use PHPUnit\Framework\TestCase;
 
 class UpdateProductUseCaseTest extends TestCase
 {
     public function testExecuteUpdatesProductSuccessfully(): void
     {
-        // 1. On crée les doubles (Mocks)
+        // 1. Mocks
         $productRepo = $this->createMock(ProductRepositoryInterface::class);
         $categoryRepo = $this->createMock(CategoryRepositoryInterface::class);
+        $attributeMapper = $this->createMock(AttributesMapper::class);
+        $attributeMock = $this->createMock(Attribute::class);
 
-        // 2. On prépare les données de test
+        // 2. Préparation
         $category = new Category('cat-1', 'Bougies', 'bougies');
-        $product = new Product('prod-1', 'Ancien Nom', 'ancien-nom', 10.0, $category, []);
+        // On suppose que Product possède un constructeur compatible
+        $product = new Product('prod-1', 'Ancien Nom', 'ancien-nom', 10.0, $category, new Attribute());
 
         $dto = new UpdateProductDto(
             name: 'Nouveau Nom',
             price: 15.0,
             categoryId: 'cat-1',
-            attributes: ['color' => 'red']
+            attributes: ['fragrance' => 'Lavande']    
         );
 
-        // 3. On configure les attentes
+        // 3. Configuration
         $productRepo->expects($this->once())->method('findById')->willReturn($product);
         $categoryRepo->expects($this->once())->method('findById')->willReturn($category);
         
-        // C'EST ICI LE TEST : On vérifie que save() est appelé avec le produit modifié
-        $productRepo->expects($this->once())->method('save')->with($this->callback(function (Product $p) {
-            return $p->getName() === 'Nouveau Nom' && $p->getPrice() === 15.0;
-        }));
+        $attributeMapper
+            ->expects($this->once())
+            ->method('fromDto')
+            ->willReturn($attributeMock);
 
-        // 4. On exécute
-        $useCase = new UpdateProductUseCase($productRepo, $categoryRepo);
+        $productRepo->expects($this->once())->method('save');
+
+        // 4. Exécution (Injection du mapper ici)
+        $useCase = new UpdateProductUseCase($productRepo, $categoryRepo, $attributeMapper);
         $result = $useCase->execute($dto, 'prod-1');
 
-        // 5. Assertions finales
+        // 5. Assertions
         $this->assertInstanceOf(Product::class, $result);
         $this->assertEquals('Nouveau Nom', $result->getName());
+        $this->assertEquals(15.0, $result->getPrice());
     }
 }

@@ -7,7 +7,7 @@ use App\Ecommerce\Domain\Model\Catalog\Attribute;
 
 class AttributesMapper
 {
-    public static function fromDto(CreateProductDto $dto): Attribute
+    public function fromDto(CreateProductDto $dto): Attribute
     {
         return new Attribute(
             weight: (float) $dto->attributes['weight'] ?? null,
@@ -17,7 +17,7 @@ class AttributesMapper
             presentation: $dto->attributes['presentation'] ?? null
         );
     }
-    public static function toDto(Attribute $attribute): array
+    public function toDto(Attribute $attribute): array
     {
         return [
             'weight' => $attribute->getWeight(),
@@ -27,7 +27,7 @@ class AttributesMapper
             'presentation' => $attribute->getPresentation()
         ];
     }
-    public static function fromArray(array $attributes): Attribute
+    public  function fromArray(array $attributes): Attribute
     {
         return new Attribute(
             weight: (float) $attributes['weight'] ?? null,
