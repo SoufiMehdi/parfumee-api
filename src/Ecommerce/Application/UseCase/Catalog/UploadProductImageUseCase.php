@@ -7,12 +7,14 @@ use App\Ecommerce\Domain\Repository\Catalog\ProductRepositoryInterface;
 use App\Ecommerce\Domain\Storage\FileStorageInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Uid\Uuid;
+use App\Ecommerce\Domain\Repository\Catalog\PictureRepositoryInterface;
 
 class UploadProductImageUseCase
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,
-        private FileStorageInterface $fileStorage
+        private FileStorageInterface $fileStorage,
+        private PictureRepositoryInterface $pictureRepository
     ) {
     }
 
@@ -32,12 +34,15 @@ class UploadProductImageUseCase
         $image = new Picture(
             Uuid::v4()->toRfc4122(),
             $filePath,
-            $alt
+            $alt,
+            product: $product
         );
 
         // 4. On l'ajoute au produit et on sauvegarde
+
         $product->addPicture($image);
         $this->productRepository->save($product);
+        $this->pictureRepository->save($image);
 
         return $image;
     }

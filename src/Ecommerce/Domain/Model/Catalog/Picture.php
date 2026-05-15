@@ -9,7 +9,9 @@ final readonly class Picture
         private string $id,
         private string $url,
         private ?string $alt = null,
-        private ?int $sortOrder = null
+        private ?int $sortOrder = null,
+        private ?Product $product = null,
+        private ?Category $category = null
     ){
     }
 
@@ -28,5 +30,13 @@ final readonly class Picture
     public function getSortOrder(): ?int
     {
         return $this->sortOrder;
+    }
+    public function getProduct(): ?Product
+    {
+        return $this->product;
+    }
+    public function getCategory(): ?Category
+    {
+        return $this->category;
     }
 }   

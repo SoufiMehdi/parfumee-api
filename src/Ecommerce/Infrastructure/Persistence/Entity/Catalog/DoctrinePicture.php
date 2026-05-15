@@ -4,6 +4,7 @@ namespace App\Ecommerce\Infrastructure\Persistence\Entity\Catalog;
 
 use App\Ecommerce\Domain\Model\Catalog\Picture;
 use Doctrine\ORM\Mapping as ORM;
+use App\Ecommerce\Infrastructure\Persistence\Entity\Catalog\DoctrineProduct;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'pictures')]
@@ -22,9 +23,8 @@ class DoctrinePicture
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $sortOrder;
 
-    #[ORM\ManyToOne(targetEntity: DoctrineProduct::class, inversedBy: 'images')]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
-    private ?DoctrinePicture $product = null;
+    #[ORM\ManyToOne(targetEntity: DoctrineProduct::class, inversedBy: 'pictures', cascade: ['persist'])]
+    private ?DoctrineProduct $product = null;
 
     #[ORM\ManyToOne(targetEntity: DoctrineCategory::class, inversedBy: 'images')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
@@ -73,11 +73,11 @@ class DoctrinePicture
     {
         $this->sortOrder = $sortOrder;
     }
-    public function getProduct(): ?DoctrinePicture
+    public function getProduct(): ?DoctrineProduct
     {
         return $this->product;
     }
-    public function setProduct(?DoctrinePicture $product): void
+    public function setProduct(?DoctrineProduct $product): void
     {
         $this->product = $product;
     }
