@@ -9,6 +9,7 @@
 /var/
 /vendor/
 /tests/http/
+/public/uploads/
 ###< symfony/framework-bundle ###
 
 ###> phpstan/phpstan ###
@@ -24,3 +25,4 @@ phpstan.neon
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+.continueignore

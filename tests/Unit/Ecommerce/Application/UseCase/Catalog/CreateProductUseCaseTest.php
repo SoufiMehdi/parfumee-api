@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Ecommerce\Application\UseCase\Catalog;
 
 use App\Ecommerce\Application\DTO\Catalog\CreateProductDto;
+use App\Ecommerce\Application\Mapper\AttributesMapper;
 use App\Ecommerce\Application\UseCase\Catalog\CreateProductUseCase;
 use App\Ecommerce\Domain\Exception\Catalog\CategorieNotFoundException;
 use App\Ecommerce\Domain\Model\Catalog\Category;
@@ -16,41 +17,40 @@ class CreateProductUseCaseTest extends TestCase
 {
     private $productRepository;
     private $categoryRepository;
+    private $attributesMapper;
     private $useCase;
 
     protected function setUp(): void
     {
-        // On crée des doubles des interfaces
         $this->productRepository = $this->createMock(ProductRepositoryInterface::class);
         $this->categoryRepository = $this->createMock(CategoryRepositoryInterface::class);
+        $this->attributesMapper = $this->createMock(AttributesMapper::class);
 
-        // On instancie le UseCase avec les mocks
         $this->useCase = new CreateProductUseCase(
             $this->productRepository,
-            $this->categoryRepository
+            $this->categoryRepository,
+            $this->attributesMapper
         );
     }
 
     public function testExecuteSuccess(): void
     {
-        // 1. Préparation des données (Arange)
-        $categoryId = Uuid::v4()->toRfc4122();
+        // 1. Préparation (Arrange)
+        $categoryId = Uuid::v4();
         $dto = new CreateProductDto(
             name: 'Bougie Parfumée',
             price: 25.50,
-            categoryId: $categoryId,
+            categoryId: $categoryId->toRfc4122(),
             attributes: ['fragrance' => 'Vanille']
         );
 
         $category = new Category($categoryId, 'Bougies', 'bougies');
 
-        // On configure le mock de la catégorie pour qu'il retourne notre objet
         $this->categoryRepository
             ->expects($this->once())
             ->method('findById')
             ->willReturn($category);
 
-        // On vérifie que save() est bien appelé une fois avec un objet Product
         $this->productRepository
             ->expects($this->once())
             ->method('save')
@@ -74,12 +74,10 @@ class CreateProductUseCaseTest extends TestCase
             attributes: []
         );
 
-        // Le repository retourne null
         $this->categoryRepository
             ->method('findById')
             ->willReturn(null);
 
-        // On s'attend à ce que save() ne soit JAMAIS appelé
         $this->productRepository
             ->expects($this->never())
             ->method('save');

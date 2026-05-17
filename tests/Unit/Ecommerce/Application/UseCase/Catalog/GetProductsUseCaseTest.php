@@ -6,36 +6,56 @@ use App\Ecommerce\Application\UseCase\Catalog\GetProductsUseCase;
 use App\Ecommerce\Domain\Model\Catalog\Category;
 use App\Ecommerce\Domain\Model\Catalog\Product;
 use App\Ecommerce\Domain\Repository\Catalog\ProductRepositoryInterface;
+use App\Ecommerce\Domain\Model\Catalog\Attribute;
 use PHPUnit\Framework\TestCase;
 
 class GetProductsUseCaseTest extends TestCase
 {
+    private $productRepository;
+    private $useCase;
+
+    protected function setUp(): void
+    {
+        $this->productRepository = $this->createMock(ProductRepositoryInterface::class);
+        $this->useCase = new GetProductsUseCase($this->productRepository);
+    }
+
     public function testExecuteReturnsListOfProducts(): void
     {
-        // 1. On crée le mock du repository
-        $productRepository = $this->createMock(ProductRepositoryInterface::class);
-
-        // 2. On prépare de fausses données du Domaine
+        // 1. Arrange
         $category = new Category('cat-1', 'Parfums', 'parfums');
-        $product1 = new Product('p1', 'Oud Royal', 'oud-royal', 120.0, $category, []);
-        $product2 = new Product('p2', 'Rose Night', 'rose-night', 85.0, $category, []);
+        $productList = [
+            new Product('p1', 'Oud Royal', 'oud-royal', 120.0, $category, new Attribute()),
+            new Product('p2', 'Rose Night', 'rose-night', 85.0, $category, new Attribute())
+        ];
 
-        $productList = [$product1, $product2];
-
-        // 3. On configure le mock pour retourner cette liste
-        $productRepository
+        $this->productRepository
             ->expects($this->once())
             ->method('findAll')
             ->willReturn($productList);
 
-        // 4. On instancie et on exécute
-        $useCase = new GetProductsUseCase($productRepository);
-        $result = $useCase->execute();
+        // 2. Act
+        $result = $this->useCase->execute();
 
-        // 5. Assertions
+        // 3. Assert
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
         $this->assertSame($productList, $result);
         $this->assertInstanceOf(Product::class, $result[0]);
+    }
+
+    public function testExecuteReturnsEmptyArrayWhenNoProducts(): void
+    {
+        // 1. Arrange
+        $this->productRepository
+            ->method('findAll')
+            ->willReturn([]);
+
+        // 2. Act
+        $result = $this->useCase->execute();
+
+        // 3. Assert
+        $this->assertIsArray($result);
+        $this->assertEmpty($result);
     }
 }
