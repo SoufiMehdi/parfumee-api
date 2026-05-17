@@ -14,7 +14,8 @@ class ProductMapper
 {
     public function __construct(
         private CategoryMapper $categoryMapper,
-        private AttributesMapper $attributesMapper
+        private AttributesMapper $attributesMapper,
+        private PictureMapper $pictureMapper
     )
     {
         // Si tu as besoin d'injecter d'autres mappers ou services, tu peux le faire ici
@@ -50,14 +51,14 @@ class ProductMapper
      */
     public function toDomain(DoctrineProduct $doctrineProduct): Product
     {
-
         return new Product(
             $doctrineProduct->getId(),
             $doctrineProduct->getName(),
             "slug-placeholder", // Tu peux ajouter le slug dans DoctrineProduct si besoin
             $doctrineProduct->getPrice(),
             $this->categoryMapper->toDomain($doctrineProduct->getCategory()),
-            $this->attributesMapper->fromArray($doctrineProduct->getAttributes())
+            $this->attributesMapper->fromArray($doctrineProduct->getAttributes()),
+            array_map(fn($doctrinePicture) => $this->pictureMapper->toDomain($doctrinePicture), $doctrineProduct->getPictures()->toArray())
         );
     }
 }

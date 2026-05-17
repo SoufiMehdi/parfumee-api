@@ -17,7 +17,13 @@ class ProductPresenter
                 'id' => $product->getCategory()->getId(),
                 'name' => $product->getCategory()->getName()
             ],
-            'attributes' => $product->getAttributes()->toArray()
+            'attributes' => $product->getAttributes()->toArray(),
+            'pictures' => array_map(fn($picture) => [
+                'id' => $picture->getId(),
+                'url' => $picture->url(),
+                'alt' => $picture->getAlt(),
+                'sortOrder' => $picture->getSortOrder()
+            ], $product->getPictures())
         ];
     }
     /**

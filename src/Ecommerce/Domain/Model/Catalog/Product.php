@@ -5,7 +5,6 @@ namespace App\Ecommerce\Domain\Model\Catalog;
 use App\Ecommerce\Domain\Exception\Catalog\InvalidPriceException;
 use App\Ecommerce\Domain\Model\Catalog\Category;
 use App\Ecommerce\Domain\Model\Catalog\Picture;
-
 class Product
 {
     private string $id;
@@ -14,15 +13,17 @@ class Product
     private float $price;
     private Category $category;
     private ?Attribute $attributes; // Stockera tes données spécifiques (parfum, taille, etc.)
-    private ?array $pictures; // Stockera les images du produit
 
+    /** @var Picture[] */
+    private array $pictures = []; // Initialisation directe : plus jamais de erreur "non initialisé"
     public function __construct(
         string $id,
         string $name,
         string $slug,
         float $price,
         Category $category,
-        ?Attribute $attributes = null
+        ?Attribute $attributes = null,
+        array $pictures = []
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -30,6 +31,7 @@ class Product
         $this->setPrice($price); // Utilisation d'un setter pour valider le métier
         $this->category = $category;
         $this->attributes = $attributes ?? new Attribute(); // Si aucun attribut n'est fourni, on initialise avec des valeurs par défaut
+        $this->pictures = $pictures ?? []; // On peut aussi injecter les images à la création si besoin, sinon elles seront ajoutées via addPicture() plus tard
     }
 
     public function setPrice(float $price): void
@@ -61,11 +63,16 @@ class Product
         // Tu peux aussi recalculer le slug ici
         $this->slug = str_replace(' ', '-', strtolower($name));
     }
+
     public function addPicture(Picture $picture): void
     {
         $this->pictures[] = $picture;
     }
-    public function getPictures(): ?array
+
+    /**
+     * @return Picture[]
+     */
+    public function getPictures(): array
     {
         return $this->pictures;
     }

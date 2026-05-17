@@ -15,13 +15,8 @@ class PictureMapper
         
     }
 
-    public function toInfrastructure(Picture $picture): DoctrinePicture
-    {
-        $productEntity = null;
-        if ($picture->getProduct()) {
-            $productEntity = $this->entityManager->getRepository(DoctrineProduct::class)
-            ->find($picture->getProduct()->getId());
-        }   
+    public function toInfrastructure(Picture $picture, ?DoctrineProduct $productEntity = null): DoctrinePicture
+    {   
 
         return new DoctrinePicture(
             $picture->getId(),
@@ -30,6 +25,15 @@ class PictureMapper
             $picture->getSortOrder(),
             $productEntity,
             null
+        );
+    }
+    public function toDomain(DoctrinePicture $doctrinePicture): Picture
+    {
+        return new Picture(
+            $doctrinePicture->getId(),
+            $doctrinePicture->getUrl(),
+            $doctrinePicture->getAlt(),
+            $doctrinePicture->getSortOrder()
         );
     }
 }

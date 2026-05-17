@@ -60,7 +60,13 @@ class ProductController extends AbstractController
             attributes: $data['attributes'] ?? []
         );
         $product = $useCase->execute($dto, $id);
-        return new JsonResponse($product, JsonResponse::HTTP_OK);   
+        return new JsonResponse(
+            [
+                'result' => 'Product updated successfully',
+                'data' => $product->getId()
+            ], 
+            JsonResponse::HTTP_OK
+            );   
     }
     #[Route('/upload-picture/{productId}', name: 'upload_picture', methods: [Request::METHOD_POST])]
     public function uploadPicture(string $productId, Request $request, UploadProductImageUseCase $useCase): JsonResponse
@@ -74,7 +80,12 @@ class ProductController extends AbstractController
 
         try {
             $picture = $useCase->execute($productId, $file, $alt);
-            return new JsonResponse($picture, JsonResponse::HTTP_OK);
+            return new JsonResponse(
+                [
+                'result' => 'Image uploaded successfully',
+                'data' => $picture->getId()
+                ], 
+                JsonResponse::HTTP_OK);
         } catch (\Exception $e) {
             return new JsonResponse(['message' => $e->getMessage()], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
