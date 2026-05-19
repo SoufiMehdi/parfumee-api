@@ -2,7 +2,7 @@
 
 namespace App\Ecommerce\Domain\Model\Catalog;
 
-final readonly class Picture
+readonly class Picture
 {
 
     public function __construct(

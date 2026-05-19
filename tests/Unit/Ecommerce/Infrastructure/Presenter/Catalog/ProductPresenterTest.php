@@ -45,7 +45,7 @@ class ProductPresenterTest extends TestCase
         $productMock->method('getAttributes')->willReturn($attributesMock);
 
         $result = $this->presenter->present($productMock);
-
+        
         $this->assertEquals([
             'id' => 'prod-123',
             'name' => 'Laptop',
@@ -61,7 +61,8 @@ class ProductPresenterTest extends TestCase
                 'size' => 'medium',
                 'description' => 'A nice product',
                 'presentation' => 'box',
-            ]
+            ],
+            'pictures' => []
         ], $result);
     }
 
