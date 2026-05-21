@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Ecommerce\Infrastructure\Persistence\Mapper\Catalog;
 
+use App\Ecommerce\Domain\Model\Catalog\Attribute;
 use App\Ecommerce\Application\Mapper\AttributesMapper;
 use App\Ecommerce\Domain\Model\Catalog\Category;
 use App\Ecommerce\Domain\Model\Catalog\Product;
@@ -37,21 +38,25 @@ class ProductMapperTest extends TestCase
 
     public function testToInfrastructure(): void
     {
+        // 1. Arrange
         $product = $this->createMock(Product::class);
         $doctrineCategory = $this->createMock(DoctrineCategory::class);
-        
+        $attributeMock = $this->createMock(Attribute::class); // Création d'un mock d'Attribute pour respecter le type de retour
+
         $product->method('getId')->willReturn('id-1');
         $product->method('getName')->willReturn('Product Name');
         $product->method('getPrice')->willReturn(100.50);
-        $product->method('getAttributes')->willReturn(['color' => 'red']);
+        $product->method('getAttributes')->willReturn($attributeMock); // Retourne le mock au lieu d'un tableau array
 
         $this->attributesMapper->expects($this->once())
             ->method('toDto')
-            ->with(['color' => 'red'])
-            ->willReturn(['color' => 'red']);
+            ->with($attributeMock)
+            ->willReturn(['color' => 'red']); // Le mapper d'infrastructure, lui, convertit bien en tableau pour Doctrine
 
+        // 2. Act
         $result = $this->mapper->toInfrastructure($product, $doctrineCategory);
 
+        // 3. Assert
         $this->assertInstanceOf(DoctrineProduct::class, $result);
         $this->assertSame('id-1', $result->getId());
         $this->assertSame('Product Name', $result->getName());
@@ -61,47 +66,55 @@ class ProductMapperTest extends TestCase
 
     public function testMapDomainToEntity(): void
     {
+        // 1. Arrange
         $product = $this->createMock(Product::class);
         $doctrineProduct = $this->createMock(DoctrineProduct::class);
         $doctrineCategory = $this->createMock(DoctrineCategory::class);
+        $attributeMock = $this->createMock(Attribute::class);
 
         $product->method('getName')->willReturn('Updated Name');
         $product->method('getPrice')->willReturn(200.00);
-        $product->method('getAttributes')->willReturn(['size' => 'L']);
+        $product->method('getAttributes')->willReturn($attributeMock);
 
         $this->attributesMapper->expects($this->once())
             ->method('toDto')
-            ->with(['size' => 'L'])
+            ->with($attributeMock)
             ->willReturn(['size' => 'L']);
 
+        // Assertions sur l'objet de base de données qui va recevoir les modifications
         $doctrineProduct->expects($this->once())->method('setName')->with('Updated Name');
         $doctrineProduct->expects($this->once())->method('setPrice')->with(200.00);
         $doctrineProduct->expects($this->once())->method('setCategory')->with($doctrineCategory);
         $doctrineProduct->expects($this->once())->method('setAttributes')->with(['size' => 'L']);
 
+        // 2. Act
         $this->mapper->mapDomainToEntity($product, $doctrineProduct, $doctrineCategory);
     }
 
     public function testToDomain(): void
     {
+        // 1. Arrange
         $doctrineProduct = $this->createMock(DoctrineProduct::class);
         $doctrineCategory = $this->createMock(DoctrineCategory::class);
         $doctrinePicture = $this->createMock(DoctrinePicture::class);
         $category = $this->createMock(Category::class);
+        $attribute = $this->createMock(Attribute::class);
 
         $doctrineProduct->method('getId')->willReturn('id-1');
         $doctrineProduct->method('getName')->willReturn('Name');
         $doctrineProduct->method('getPrice')->willReturn(10.0);
         $doctrineProduct->method('getCategory')->willReturn($doctrineCategory);
-        $doctrineProduct->method('getAttributes')->willReturn([]);
+        $doctrineProduct->method('getAttributes')->willReturn(['color' => 'blue']); // Doctrine renvoie un tableau
         $doctrineProduct->method('getPictures')->willReturn(new ArrayCollection([$doctrinePicture]));
 
-        $this->categoryMapper->expects($this->once())->method('toDomain')->willReturn($category);
-        $this->attributesMapper->expects($this->once())->method('fromArray')->willReturn([]);
+        $this->categoryMapper->expects($this->once())->method('toDomain')->with($doctrineCategory)->willReturn($category);
+        $this->attributesMapper->expects($this->once())->method('fromArray')->with(['color' => 'blue'])->willReturn($attribute);
         $this->pictureMapper->expects($this->once())->method('toDomain')->with($doctrinePicture);
 
+        // 2. Act
         $result = $this->mapper->toDomain($doctrineProduct);
 
+        // 3. Assert
         $this->assertInstanceOf(Product::class, $result);
     }
 }
