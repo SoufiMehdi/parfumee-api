@@ -32,14 +32,18 @@ class DoctrineProductRepositoryTest extends TestCase
         $category = $this->createMock(Category::class);
         $doctrineCategory = new DoctrineCategory(
             'cat-1',
-            'Category 1'
+            'Category 1',
+            'slug-cat-1'
         );
         $doctrineProduct = new DoctrineProduct(
             'prod-1',
             'Product 1',
-            'Description of Product 1',
             100.0,
-            $doctrineCategory
+            $doctrineCategory,
+            [
+                'description' => 'Description of Product 1',
+                'size' => 'M'
+            ]
         );
 
         $product->method('getId')->willReturn('prod-1');
@@ -73,7 +77,17 @@ class DoctrineProductRepositoryTest extends TestCase
     public function testFindByIdReturnsProduct(): void
     {
         $productId = 'prod-1';
-        $doctrineProduct = new DoctrineProduct();
+        $doctrineProduct = new DoctrineProduct(
+            $productId,
+            'Product 1',
+            100.0,
+            new DoctrineCategory('cat-1', 'Category 1', 'slug-cat-1'),
+            [
+                'description' => 'Description of Product 1',
+                'size' => 'M'
+
+            ]
+        );
         $product = $this->createMock(Product::class);
         $repository = $this->createMock(EntityRepository::class);
 
@@ -94,5 +108,34 @@ class DoctrineProductRepositoryTest extends TestCase
         $result = $this->repository->findById($productId);
 
         $this->assertSame($product, $result);
+    }
+     public function testFindAllReturnsCollectionOfProducts(): void
+    {
+        $doctrineProduct1 = $this->createMock(DoctrineProduct::class);
+        $doctrineProduct2 = $this->createMock(DoctrineProduct::class);
+        $product1 = $this->createMock(Product::class);
+        $product2 = $this->createMock(Product::class);
+        
+        $repository = $this->createMock(EntityRepository::class);
+
+        $this->entityManager->method('getRepository')
+            ->with(DoctrineProduct::class)
+            ->willReturn($repository);
+
+        $repository->expects($this->once())
+            ->method('findAll')
+            ->willReturn([$doctrineProduct1, $doctrineProduct2]);
+
+        $this->mapper->expects($this->exactly(2))
+            ->method('toDomain')
+            ->willReturnMap([
+                [$doctrineProduct1, $product1],
+                [$doctrineProduct2, $product2],
+            ]);
+
+        $result = $this->repository->findAll();
+
+        $this->assertCount(2, $result);
+        $this->assertSame([$product1, $product2], $result);
     }
 }
