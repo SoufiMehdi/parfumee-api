@@ -1,8 +1,9 @@
-<?php 
+<?php
 
 namespace App\Ecommerce\Infrastructure\Controller\Catalog;
 
 use App\Ecommerce\Application\UseCase\Catalog\CreateProductUseCase;
+use App\Ecommerce\Application\UseCase\Catalog\GetFilteredProductsUseCase;
 use App\Ecommerce\Application\UseCase\Catalog\GetProductsUseCase;
 use App\Ecommerce\Application\UseCase\Catalog\GetProductUseCase;
 use App\Ecommerce\Infrastructure\Presenter\Catalog\ProductPresenter;
@@ -36,6 +37,16 @@ class ProductController extends AbstractController
         return new JsonResponse($data);
     }
 
+    #[Route('/products/filter', name: 'get_filtered_products', methods: [Request::METHOD_GET])]
+    public function getFiltered(Request $request, GetFilteredProductsUseCase $useCase, ProductPresenter $presenter): JsonResponse
+    {
+
+        $products = $useCase->execute($request->toArray());
+        $data = $presenter->presentCollection($products);
+
+        return new JsonResponse($data);
+    }
+
     #[Route('/create-product', name: 'create_product', methods: [Request::METHOD_POST])]
     public function create(Request $request, CreateProductUseCase $useCase): JsonResponse
     {
@@ -64,13 +75,13 @@ class ProductController extends AbstractController
             [
                 'result' => 'Product updated successfully',
                 'data' => $product->getId()
-            ], 
+            ],
             JsonResponse::HTTP_OK
-            );   
+            );
     }
     #[Route('/upload-picture/{productId}', name: 'upload_picture', methods: [Request::METHOD_POST])]
     public function uploadPicture(string $productId, Request $request, UploadProductImageUseCase $useCase): JsonResponse
-    {   
+    {
         $file = $request->files->get('file');
         $alt = $request->request->get('alt');
 
@@ -84,7 +95,7 @@ class ProductController extends AbstractController
                 [
                 'result' => 'Image uploaded successfully',
                 'data' => $picture->getId()
-                ], 
+                ],
                 JsonResponse::HTTP_OK);
         } catch (\Exception $e) {
             return new JsonResponse(['message' => $e->getMessage()], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);

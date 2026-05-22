@@ -3,6 +3,7 @@
 namespace App\Ecommerce\Infrastructure\Persistence\Doctrine\Catalog;
 
 use App\Ecommerce\Application\DTO\Catalog\CreateProductDto;
+use App\Ecommerce\Application\DTO\Catalog\GetProductsFilterDto;
 use App\Ecommerce\Domain\Exception\Catalog\CategorieNotFoundException;
 use App\Ecommerce\Domain\Model\Catalog\Product;
 use App\Ecommerce\Domain\Repository\Catalog\ProductRepositoryInterface;
@@ -52,5 +53,42 @@ class DoctrineProductRepository implements ProductRepositoryInterface
     {
         $doctrineProducts = $this->entityManager->getRepository(DoctrineProduct::class)->findAll();
         return array_map([$this->mapper, 'toDomain'], $doctrineProducts);
+    }
+
+    public function findByFilter( GetProductsFilterDto $filterDto): array
+    {
+        $qb = $this->entityManager->createQueryBuilder('p');
+
+        // 1. Filtre par catégorie
+        if ($filterDto->categoryId) {
+            $qb->andWhere('p.category = :categoryId')
+                ->setParameter('categoryId', $filterDto->categoryId);
+        }
+
+        // 2. Filtres par prix
+        if ($filterDto->minPrice !== null) {
+            $qb->andWhere('p.price >= :minPrice')
+                ->setParameter('minPrice', $filterDto->minPrice);
+        }
+        if ($filterDto->maxPrice !== null) {
+            $qb->andWhere('p.price <= :maxPrice')
+                ->setParameter('maxPrice', $filterDto->maxPrice);
+        }
+
+        // 3. Filtres sur le JSON d'attributs (taille et parfum)
+        // Si tes attributs sont stockés dans un champ JSON sous Doctrine :
+        if ($filterDto->scent) {
+            $qb->andWhere("JSON_GET_TEXT(p.attributes, 'scent') = :scent")
+                ->setParameter('scent', $filterDto->scent);
+        }
+        if ($filterDto->size) {
+            $qb->andWhere("JSON_GET_TEXT(p.attributes, 'size') = :size")
+                ->setParameter('size', $filterDto->size);
+        }
+
+        $entities = $qb->getQuery()->getResult();
+
+        // On transforme les entités Doctrine en modèles de Domaine via ton mapper
+        return $entities;
     }
 }
