@@ -55,40 +55,48 @@ class DoctrineProductRepository implements ProductRepositoryInterface
         return array_map([$this->mapper, 'toDomain'], $doctrineProducts);
     }
 
-    public function findByFilter( GetProductsFilterDto $filterDto): array
+    public function findByFilter(GetProductsFilterDto $filterDto): array
     {
-        $qb = $this->entityManager->createQueryBuilder('p');
+        $rsm = new \Doctrine\ORM\Query\ResultSetMappingBuilder($this->entityManager);
+        $rsm->addRootEntityFromClassMetadata(DoctrineProduct::class, 'p');
 
+        $sql = "SELECT p.* FROM products p WHERE 1=1";
+        $params = [];
         // 1. Filtre par catégorie
         if ($filterDto->categoryId) {
-            $qb->andWhere('p.category = :categoryId')
-                ->setParameter('categoryId', $filterDto->categoryId);
+            $sql .= " AND p.category_id = :categoryId";
+            $params['categoryId'] = $filterDto->categoryId;
         }
 
         // 2. Filtres par prix
         if ($filterDto->minPrice !== null) {
-            $qb->andWhere('p.price >= :minPrice')
-                ->setParameter('minPrice', $filterDto->minPrice);
+            $sql .= " AND p.price >= :minPrice";
+            $params['minPrice'] = $filterDto->minPrice;
         }
         if ($filterDto->maxPrice !== null) {
-            $qb->andWhere('p.price <= :maxPrice')
-                ->setParameter('maxPrice', $filterDto->maxPrice);
+            $sql .= " AND p.price <= :maxPrice";
+            $params['maxPrice'] = $filterDto->maxPrice;
         }
 
         // 3. Filtres sur le JSON d'attributs (taille et parfum)
         // Si tes attributs sont stockés dans un champ JSON sous Doctrine :
         if ($filterDto->scent) {
-            $qb->andWhere("JSON_GET_TEXT(p.attributes, 'scent') = :scent")
-                ->setParameter('scent', $filterDto->scent);
+            $sql .= " AND p.attributes->>'fragrance' = :scent";
+            $params['scent'] = $filterDto->scent;
         }
         if ($filterDto->size) {
-            $qb->andWhere("JSON_GET_TEXT(p.attributes, 'size') = :size")
-                ->setParameter('size', $filterDto->size);
+            $sql .= " AND p.attributes->>'size' = :size";
+            $params['size'] = $filterDto->size;
         }
 
-        $entities = $qb->getQuery()->getResult();
+        $query = $this->entityManager->createNativeQuery($sql, $rsm);
+        foreach ($params as $key => $value) {
+            $query->setParameter($key, $value);
+        }
+
+        $entities = $query->getResult();
 
         // On transforme les entités Doctrine en modèles de Domaine via ton mapper
-        return $entities;
+        return $entities ? array_map([$this->mapper, 'toDomain'], $entities) : [];
     }
 }

@@ -40,8 +40,7 @@ class ProductController extends AbstractController
     #[Route('/products/filter', name: 'get_filtered_products', methods: [Request::METHOD_GET])]
     public function getFiltered(Request $request, GetFilteredProductsUseCase $useCase, ProductPresenter $presenter): JsonResponse
     {
-
-        $products = $useCase->execute($request->toArray());
+        $products = $useCase->execute($request->query->all());
         $data = $presenter->presentCollection($products);
 
         return new JsonResponse($data);
