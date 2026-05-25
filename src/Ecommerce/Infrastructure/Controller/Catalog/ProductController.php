@@ -1,8 +1,9 @@
-<?php 
+<?php
 
 namespace App\Ecommerce\Infrastructure\Controller\Catalog;
 
 use App\Ecommerce\Application\UseCase\Catalog\CreateProductUseCase;
+use App\Ecommerce\Application\UseCase\Catalog\GetFilteredProductsUseCase;
 use App\Ecommerce\Application\UseCase\Catalog\GetProductsUseCase;
 use App\Ecommerce\Application\UseCase\Catalog\GetProductUseCase;
 use App\Ecommerce\Infrastructure\Presenter\Catalog\ProductPresenter;
@@ -13,6 +14,7 @@ use App\Ecommerce\Application\DTO\Catalog\CreateProductDto;
 use App\Ecommerce\Application\DTO\Catalog\UpdateProductDto;
 use App\Ecommerce\Application\UseCase\Catalog\UpdateProductUseCase;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Ecommerce\Application\UseCase\Catalog\UploadProductImageUseCase;
 
 class ProductController extends AbstractController
 {
@@ -32,6 +34,15 @@ class ProductController extends AbstractController
             return new JsonResponse(['message' => 'Product not found'], JsonResponse::HTTP_NOT_FOUND);
         }
         $data = $presenter->present($product);
+        return new JsonResponse($data);
+    }
+
+    #[Route('/products/filter', name: 'get_filtered_products', methods: [Request::METHOD_GET])]
+    public function getFiltered(Request $request, GetFilteredProductsUseCase $useCase, ProductPresenter $presenter): JsonResponse
+    {
+        $products = $useCase->execute($request->query->all());
+        $data = $presenter->presentCollection($products);
+
         return new JsonResponse($data);
     }
 
@@ -59,7 +70,34 @@ class ProductController extends AbstractController
             attributes: $data['attributes'] ?? []
         );
         $product = $useCase->execute($dto, $id);
-        return new JsonResponse($product, JsonResponse::HTTP_OK);   
+        return new JsonResponse(
+            [
+                'result' => 'Product updated successfully',
+                'data' => $product->getId()
+            ],
+            JsonResponse::HTTP_OK
+            );
     }
-    
+    #[Route('/upload-picture/{productId}', name: 'upload_picture', methods: [Request::METHOD_POST])]
+    public function uploadPicture(string $productId, Request $request, UploadProductImageUseCase $useCase): JsonResponse
+    {
+        $file = $request->files->get('file');
+        $alt = $request->request->get('alt');
+
+        if (!$productId || !$file) {
+            return new JsonResponse(['message' => 'Product ID and file are required'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $picture = $useCase->execute($productId, $file, $alt);
+            return new JsonResponse(
+                [
+                'result' => 'Image uploaded successfully',
+                'data' => $picture->getId()
+                ],
+                JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => $e->getMessage()], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

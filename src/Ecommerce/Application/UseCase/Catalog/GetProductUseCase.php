@@ -13,6 +13,10 @@ class GetProductUseCase
 
     public function execute(?string $id): ?Product
     {
+        if (null === $id) {
+            return null;
+        }
+
         return $this->productRepository->findById($id);
     }
 }

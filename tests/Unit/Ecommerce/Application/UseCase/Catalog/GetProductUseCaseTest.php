@@ -21,17 +21,9 @@ class GetProductUseCaseTest extends TestCase
 
     public function testExecuteReturnsProductWhenFound(): void
     {
-        // 1. Arrange
         $productId = 'uuid-123';
         $category = new Category('cat-1', 'Parfums', 'parfums');
-        $expectedProduct = new Product(
-            $productId,
-            'Mon Parfum',
-            'mon-parfum',
-            95.0,
-            $category,
-            ['size' => '100ml']
-        );
+        $expectedProduct = $this->createMock(Product::class);
 
         $this->productRepository
             ->expects($this->once())
@@ -39,30 +31,27 @@ class GetProductUseCaseTest extends TestCase
             ->with($productId)
             ->willReturn($expectedProduct);
 
-        // 2. Act
         $result = $this->useCase->execute($productId);
 
-        // 3. Assert
-        $this->assertInstanceOf(Product::class, $result);
-        $this->assertEquals('Mon Parfum', $result->getName());
         $this->assertSame($expectedProduct, $result);
     }
 
     public function testExecuteReturnsNullWhenProductNotFound(): void
     {
-        // 1. Arrange
-        $productId = 'non-existent-id';
-
         $this->productRepository
-            ->expects($this->once())
             ->method('findById')
-            ->with($productId)
             ->willReturn(null);
 
-        // 2. Act
-        $result = $this->useCase->execute($productId);
+        $this->assertNull($this->useCase->execute('non-existent-id'));
+    }
 
-        // 3. Assert
-        $this->assertNull($result);
+    public function testExecuteReturnsNullWhenIdIsNull(): void
+    {
+        // On vérifie que le repository n'est jamais appelé si l'id est null
+        $this->productRepository
+            ->expects($this->never())
+            ->method('findById');
+
+        $this->assertNull($this->useCase->execute(null));
     }
 }

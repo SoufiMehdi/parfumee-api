@@ -7,13 +7,15 @@ use App\Ecommerce\Domain\Exception\Catalog\CategorieNotFoundException;
 use App\Ecommerce\Domain\Model\Catalog\Product;
 use App\Ecommerce\Domain\Repository\Catalog\ProductRepositoryInterface;
 use App\Ecommerce\Domain\Repository\Catalog\CategoryRepositoryInterface;
+use App\Ecommerce\Application\Mapper\AttributesMapper;
 use Symfony\Component\Uid\Uuid;
 
 class CreateProductUseCase
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,
-        private CategoryRepositoryInterface $categoryRepository
+        private CategoryRepositoryInterface $categoryRepository,
+        private AttributesMapper $attributesMapper
     ) {
     }
 
@@ -32,7 +34,7 @@ class CreateProductUseCase
             strtolower(str_replace(' ', '-', $dto->name)), // Génère un slug simple à partir du nom
             $dto->price,
             $category,
-            $dto->attributes
+            $this->attributesMapper->fromDto($dto)
         );
         // 3. Enregistrer le produit en base de données via le repository
         $this->productRepository->save($product);

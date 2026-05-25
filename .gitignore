@@ -2,6 +2,7 @@
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
+.env.test
 /.env.*.local
 /.env.dev
 /config/secrets/prod/prod.decrypt.private.php
@@ -9,6 +10,7 @@
 /var/
 /vendor/
 /tests/http/
+/public/uploads/
 ###< symfony/framework-bundle ###
 
 ###> phpstan/phpstan ###
@@ -24,3 +26,4 @@ phpstan.neon
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+.continueignore
