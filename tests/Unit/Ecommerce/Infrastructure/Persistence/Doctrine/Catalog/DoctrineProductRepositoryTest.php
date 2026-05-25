@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Ecommerce\Infrastructure\Persistence\Doctrine\Catalog;
 
+use App\Ecommerce\Application\DTO\Catalog\GetProductsFilterDto;
 use App\Ecommerce\Domain\Model\Catalog\Product;
 use App\Ecommerce\Domain\Model\Catalog\Category;
 use App\Ecommerce\Infrastructure\Persistence\Doctrine\Catalog\DoctrineProductRepository;
@@ -10,6 +11,7 @@ use App\Ecommerce\Infrastructure\Persistence\Entity\Catalog\DoctrineProduct;
 use App\Ecommerce\Infrastructure\Persistence\Mapper\Catalog\ProductMapper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NativeQuery;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -138,4 +140,40 @@ class DoctrineProductRepositoryTest extends TestCase
         $this->assertCount(2, $result);
         $this->assertSame([$product1, $product2], $result);
     }
+
+    public function testFindByFilterReturnsFilteredProducts(): void
+    {
+        $filterDto = new GetProductsFilterDto(
+            categoryId: 'cat-1',
+            minPrice: 50.0,
+            maxPrice: 150.0,
+            scent: 'lavender',
+            size: 'M'
+        );
+
+        $doctrineProduct = $this->createMock(DoctrineProduct::class);
+        $product = $this->createMock(Product::class);
+        $query = $this->createMock(NativeQuery::class);
+
+        $this->entityManager->expects($this->once())
+            ->method('createNativeQuery')
+            ->willReturn($query);
+
+        $query->expects($this->exactly(5))
+            ->method('setParameter');
+
+        $query->expects($this->once())
+            ->method('getResult')
+            ->willReturn([$doctrineProduct]);
+
+        $this->mapper->expects($this->once())
+            ->method('toDomain')
+            ->with($doctrineProduct)
+            ->willReturn($product);
+
+        $result = $this->repository->findByFilter($filterDto);
+
+        $this->assertSame([$product], $result);
+    }
 }
+
