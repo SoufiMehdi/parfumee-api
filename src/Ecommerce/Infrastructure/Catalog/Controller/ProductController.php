@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Ecommerce\Infrastructure\Controller\Catalog;
+namespace App\Ecommerce\Infrastructure\Catalog\Controller;
 
 use App\Ecommerce\Application\UseCase\Catalog\CreateProductUseCase;
 use App\Ecommerce\Application\UseCase\Catalog\GetFilteredProductsUseCase;
@@ -8,6 +8,8 @@ use App\Ecommerce\Application\UseCase\Catalog\GetProductsUseCase;
 use App\Ecommerce\Application\UseCase\Catalog\GetProductUseCase;
 use App\Ecommerce\Infrastructure\Presenter\Catalog\ProductPresenter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Ecommerce\Application\Mapper\User\RegisterUserRequestMapper;
+use App\Ecommerce\Application\UseCase\User\RegisterUserUseCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Ecommerce\Application\DTO\Catalog\CreateProductDto;
@@ -99,5 +101,16 @@ class ProductController extends AbstractController
         } catch (\Exception $e) {
             return new JsonResponse(['message' => $e->getMessage()], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+    #[Route('/user/register', name: 'user_register', methods: ['POST'])]
+    public function register(Request $request, RegisterUserUseCase $useCase): JsonResponse
+    {
+        // 1. Mapping
+        $dto = RegisterUserRequestMapper::fromRequest($request);
+
+        // 2. Exécution du Use Case
+        $useCase->execute($dto);
+
+        return new JsonResponse(['status' => 'User created'], 201);
     }
 }

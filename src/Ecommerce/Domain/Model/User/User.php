@@ -10,7 +10,7 @@ class User
     private array $roles;
 
     public function __construct(
-        private readonly Uuid $id,
+        private readonly string $id,
         private Email $email,
         private string $passwordHash,
         private string $firstName,
@@ -21,7 +21,7 @@ class User
     }
 
     // Getters
-    public function getId(): Uuid { return $this->id; }
+    public function getId(): string { return $this->id; }
     public function getEmail(): Email { return $this->email; }
     public function getPasswordHash(): string { return $this->passwordHash; }
     public function getFirstName(): string { return $this->firstName; }

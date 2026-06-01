@@ -7,6 +7,8 @@ namespace App\Ecommerce\Application\UseCase\User;
 use App\Ecommerce\Domain\Model\User\User;
 use App\Domain\User\Repository\UserRepositoryInterface;
 use App\Ecommerce\Domain\Service\User\PasswordHasherInterface;
+use App\Ecommerce\Application\DTO\User\RegisterUserRequestDTO;
+use App\Ecommerce\Domain\ValueObject\User\Email;
 use Symfony\Component\Uid\Uuid;
 
 readonly class RegisterUserUseCase
@@ -16,17 +18,19 @@ readonly class RegisterUserUseCase
         private PasswordHasherInterface $passwordHasher
     ) {}
 
-    public function execute(string $email, string $plainPassword): void
+    public function execute(RegisterUserRequestDTO $dto): void
     {
         // 1. Logique métier : vérifier si l'utilisateur existe déjà
         // (A ajouter dans le repository si besoin)
 
         // 2. Création de l'entité
-        $hashedPassword = $this->passwordHasher->hash($plainPassword);
+        $hashedPassword = $this->passwordHasher->hash($dto->password);
         $user = new User(
             Uuid::v4()->toRfc4122(),
-            $email,
-            $hashedPassword
+            new Email($dto->email),
+            $hashedPassword,
+            $dto->firstName,
+            $dto->lastName
         );
 
         // 3. Persistance
