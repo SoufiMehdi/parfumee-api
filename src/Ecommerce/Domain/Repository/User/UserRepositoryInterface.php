@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\User\Repository;
+namespace App\Ecommerce\Domain\Repository\User;
 
 use App\Ecommerce\Domain\Model\User\User;
 use Symfony\Polyfill\Uuid\Uuid;

@@ -2,7 +2,7 @@
 
 namespace App\Ecommerce\Infrastructure\Persistence\Doctrine\User;
 
-use App\Domain\User\Repository\UserRepositoryInterface;
+use App\Ecommerce\Domain\Repository\User\UserRepositoryInterface;
 use App\Ecommerce\Domain\Model\User\User;
 use Symfony\Polyfill\Uuid\Uuid;
 use Doctrine\ORM\EntityManagerInterface;

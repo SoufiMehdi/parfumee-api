@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Ecommerce\Application\UseCase\User;
 
 use App\Ecommerce\Domain\Model\User\User;
-use App\Domain\User\Repository\UserRepositoryInterface;
+use App\Ecommerce\Domain\Repository\User\UserRepositoryInterface;
 use App\Ecommerce\Domain\Service\User\PasswordHasherInterface;
 use App\Ecommerce\Application\DTO\User\RegisterUserRequestDTO;
 use App\Ecommerce\Domain\ValueObject\User\Email;
