@@ -4,6 +4,7 @@ namespace App\Ecommerce\Infrastructure\Service\User;
 
 use App\Ecommerce\Domain\Service\User\PasswordHasherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 class PasswordHasher implements PasswordHasherInterface
 {
@@ -13,8 +14,7 @@ class PasswordHasher implements PasswordHasherInterface
 
     public function hash(string $plainPassword): string
     {
-        // Ici, vous pouvez créer un utilisateur fictif pour utiliser le hasher de Symfony
-        $user = new class {
+        $user = new class implements PasswordAuthenticatedUserInterface {
             public function getPassword(): ?string
             {
                 return null;
