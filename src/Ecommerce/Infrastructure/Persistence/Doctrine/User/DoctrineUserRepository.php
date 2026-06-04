@@ -6,10 +6,14 @@ use App\Ecommerce\Domain\Repository\User\UserRepositoryInterface;
 use App\Ecommerce\Domain\Model\User\User;
 use Symfony\Polyfill\Uuid\Uuid;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Ecommerce\Infrastructure\Persistence\Mapper\User\UserMapper; 
 
 class DoctrineUserRepository implements UserRepositoryInterface
 {
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private UserMapper $mapper
+        )
     {
     }
     public function findById(Uuid $id): User
@@ -19,7 +23,8 @@ class DoctrineUserRepository implements UserRepositoryInterface
 
     public function save(User $user): void
     {
-        $this->entityManager->persist($user);
+        $doctrineUser = $this->mapper->toInfrastructure($user);
+        $this->entityManager->persist($doctrineUser);
         $this->entityManager->flush();
     }
 
