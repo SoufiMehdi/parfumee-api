@@ -24,7 +24,6 @@ class UserController extends AbstractController
         RegisterUserUseCase $useCase
         ): JsonResponse
     {
-        dump($request->toArray());
         $dto = RegisterUserRequestMapper::fromRequest($request);
         
         $useCase->execute($dto);

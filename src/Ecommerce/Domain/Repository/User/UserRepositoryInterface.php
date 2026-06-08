@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Ecommerce\Domain\Repository\User;
 
 use App\Ecommerce\Domain\Model\User\User;
-use Symfony\Polyfill\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * Interface respectant le principe d'Interface Segregation (ISP).
