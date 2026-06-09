@@ -73,7 +73,7 @@ class DoctrineUserRepositoryTest extends TestCase
         $this->entityManager->expects($this->once())->method('remove')->with($user);
         $this->entityManager->expects($this->once())->method('flush');
 
-        $this->repository->delete($id->string);
+        $this->repository->delete($id);
     }
 
     public function testDeleteThrowsExceptionIfUserNotFound(): void
