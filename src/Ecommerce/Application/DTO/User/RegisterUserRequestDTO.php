@@ -11,5 +11,7 @@ readonly class RegisterUserRequestDTO
         public string $password,
         public string $firstName,
         public string $lastName,
+        public ?string $phoneNumber = null,
+        public ?array $address = null
     ) {}
 }

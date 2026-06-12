@@ -17,7 +17,9 @@ class RegisterUserRequestMapper
             email: $data['email'],
             password: $data['password'],
             firstName: $data['first_name'],
-            lastName: $data['last_name']
+            lastName: $data['last_name'],
+            phoneNumber: $data['phone_number'] ?? null,
+            address: $data['address'] ?? null
         );
     }
 }
