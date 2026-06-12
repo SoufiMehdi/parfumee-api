@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Ecommerce\Infrastructure\Controller\Catalog;
+namespace App\Ecommerce\Infrastructure\Controller\Catalog;  
 
 use App\Ecommerce\Application\UseCase\Catalog\CreateProductUseCase;
 use App\Ecommerce\Application\UseCase\Catalog\GetFilteredProductsUseCase;
