@@ -27,3 +27,7 @@ phpstan.neon
 /.phpunit.cache/
 ###< phpunit/phpunit ###
 .continueignore
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###

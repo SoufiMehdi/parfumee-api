@@ -1,10 +1,12 @@
-<?php 
+<?php
+
+declare(strict_types=1);
 
 namespace App\Ecommerce\Infrastructure\Service\User;
 
 use App\Ecommerce\Domain\Service\User\PasswordHasherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\InMemoryUser;
 
 class PasswordHasher implements PasswordHasherInterface
 {
@@ -14,13 +16,8 @@ class PasswordHasher implements PasswordHasherInterface
 
     public function hash(string $plainPassword): string
     {
-        $user = new class implements PasswordAuthenticatedUserInterface {
-            public function getPassword(): ?string
-            {
-                return null;
-            }
-        };
+        $dummyUser = new InMemoryUser('dummy', 'dummy');
 
-        return $this->passwordHasher->hashPassword($user, $plainPassword);
+        return $this->passwordHasher->hashPassword($dummyUser, $plainPassword);
     }
 }

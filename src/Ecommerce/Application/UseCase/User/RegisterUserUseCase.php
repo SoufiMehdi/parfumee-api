@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Ecommerce\Application\UseCase\User;
 
+use App\Ecommerce\Domain\Exception\User\DuplicateEmailException;
 use App\Ecommerce\Domain\Model\User\User;
 use App\Ecommerce\Domain\Repository\User\UserRepositoryInterface;
 use App\Ecommerce\Domain\Service\User\PasswordHasherInterface;
@@ -20,8 +21,11 @@ readonly class RegisterUserUseCase
 
     public function execute(RegisterUserRequestDTO $dto): void
     {
-        // 1. Logique métier : vérifier si l'utilisateur existe déjà
-        // (A ajouter dans le repository si besoin)
+        // 1. Vérifier si l'email est déjà utilisé
+        $existingUser = $this->userRepository->findByEmail($dto->email);
+        if ($existingUser) {
+            throw new DuplicateEmailException($dto->email);
+        }
 
         // 2. Création de l'entité
         $hashedPassword = $this->passwordHasher->hash($dto->password);

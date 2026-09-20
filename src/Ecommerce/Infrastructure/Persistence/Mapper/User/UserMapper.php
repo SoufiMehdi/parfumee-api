@@ -43,6 +43,21 @@ class UserMapper
         return $entity;
     }
 
+    public function mapDomainToEntity(User $domainUser, DoctrineUser $entity): void
+    {
+        $entity->setEmail($domainUser->getEmail()->getValue());
+        $entity->setFirstName($domainUser->getFirstName());
+        $entity->setLastName($domainUser->getLastName());
+        $entity->setPassword($domainUser->getPasswordHash());
+        $entity->setRoles($domainUser->getRoles());
+
+        if ($phone = $domainUser->getPhoneNumber()) {
+            $entity->setPhoneNumber($phone->getValue());
+        } else {
+            $entity->setPhoneNumber(null);
+        }
+    }
+
     public function toDomain(DoctrineUser $entity): User
     {
         $phoneNumber = $entity->getPhoneNumber() !== null

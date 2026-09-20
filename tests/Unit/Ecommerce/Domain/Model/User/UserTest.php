@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Ecommerce\Domain\Model\User;
 
 use App\Ecommerce\Domain\Model\User\User;
@@ -29,6 +31,7 @@ class UserTest extends TestCase
             $this->passwordHash,
             $this->firstName,
             $this->lastName,
+            null,
             $roles
         );
 
